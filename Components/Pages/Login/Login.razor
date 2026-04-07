@@ -110,7 +110,9 @@
         {
             _mensagem = "Login efetuado com sucesso ✔️";
             await _auth.Login(user);
-            _nav.NavigateTo("/");
+
+            // Redireciona para a página perfil
+            _nav.NavigateTo("/perfil",true);
         }
         else
         {

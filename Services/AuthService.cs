@@ -1,5 +1,6 @@
 ﻿using crudcomdb.Models;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using System.Text.Json;
 
 namespace crudcomdb.Services
 {
@@ -7,40 +8,41 @@ namespace crudcomdb.Services
     {
         private readonly ProtectedSessionStorage _sessionStorage;
 
+        public Usuario? UsuarioLogado { get; private set; }
+        public string ValorAtual { get; private set; }
+
+        public event Action? OnLogin;
+
         public AuthService(ProtectedSessionStorage sessionStorage)
         {
             _sessionStorage = sessionStorage;
         }
 
-        public Usuario? UsuarioLogado { get; private set; }
-
-        // Evento que notifica quando o login mudou
-        public event Action? OnLogin;
-
         public async Task Login(Usuario usuario)
         {
             UsuarioLogado = usuario;
-            await _sessionStorage.SetAsync("usuarioLogado", usuario);
-            OnLogin?.Invoke(); // dispara o evento
+            ValorAtual = "Xablauzin";
+
+            await _sessionStorage.SetAsync("UsuarioLogado", JsonSerializer.Serialize(usuario));
+            OnLogin?.Invoke();
         }
 
         public async Task Logout()
         {
-            //UsuarioLogado = null;
-            await _sessionStorage.DeleteAsync("usuarioLogado");
-            // opcional: poderia ter um evento OnLogout
+            UsuarioLogado = null;
+            ValorAtual = string.Empty;
+            await _sessionStorage.DeleteAsync("UsuarioLogado");
+            OnLogin?.Invoke();
         }
 
         public async Task Inicializar()
         {
-            var result = await _sessionStorage.GetAsync<Usuario>("usuarioLogado");
-            if (result.Success && result.Value != null && !string.IsNullOrWhiteSpace(result.Value.Username))
+            var result = await _sessionStorage.GetAsync<string>("UsuarioLogado");
+            if (result.Success && !string.IsNullOrEmpty(result.Value))
             {
-                UsuarioLogado = result.Value;
-            }
-            else
-            {
-                UsuarioLogado = null;
+                UsuarioLogado = JsonSerializer.Deserialize<Usuario>(result.Value);
+                ValorAtual = "Xablauzin";
+                OnLogin?.Invoke();
             }
         }
 

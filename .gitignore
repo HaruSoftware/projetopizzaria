@@ -1,0 +1,56 @@
+# Build results
+bin/
+obj/
+out/
+
+# Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider
+.idea/
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+# Ignore package lock files if you don't want them versioned
+package-lock.json
+project.lock.json
+
+# ASP.NET / Blazor
+wwwroot/_framework/
+wwwroot/**/*.dll
+wwwroot/**/*.pdb
+wwwroot/**/*.blat
+wwwroot/**/*.br
+wwwroot/**/*.dat
+wwwroot/**/*.json
+
+# Runtime files
+*.dll
+*.pdb
+*.exe
+*.log
+*.cache
+*.db
+
+# Publish output
+publish/
+Publish/
+*.Publish.xml
+
+# JetBrains Rider
+.idea/
+
+# Others
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Local configuration files
+appsettings.Local.json

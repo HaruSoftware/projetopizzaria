@@ -1,6 +1,6 @@
-# 🚀 Projeto C# Blazor - Engenharia de Software III
+# 🚀 Projeto C# Blazor - Pizzaria
 
-![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat&logo=dotnet)
+![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=flat&logo=dotnet)
 ![Blazor](https://img.shields.io/badge/Blazor-Web-512BD4?style=flat&logo=blazor)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Data-336791?style=flat&logo=postgresql)
 

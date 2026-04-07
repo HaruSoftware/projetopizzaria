@@ -1,0 +1,148 @@
+﻿@layout LoginLayout
+@page "/login"
+@rendermode InteractiveServer
+
+@using crudcomdb.Models
+@using crudcomdb.Interfaces
+@using crudcomdb.Services
+
+@inject IUsuarioRepository _userRepo
+@inject AuthService _auth
+@inject NavigationManager _nav
+
+<div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+
+    <div class="card shadow p-4" style="width: 350px;">
+
+        <h4 class="text-center mb-3">🍕 Pizzaria</h4>
+        <h6 class="text-center text-muted mb-4">Acesse sua conta</h6>
+
+        <!-- USER -->
+        <input class="form-control mb-3"
+               placeholder="Usuário"
+               @bind="_usuario.Username" />
+
+        <!-- SENHA -->
+        <input type="password"
+               class="form-control mb-3"
+               placeholder="Senha"
+               @bind="_usuario.Senha" />
+
+        <!-- BOTÃO LOGIN -->
+        <button class="btn btn-success w-100 mb-2"
+                @onclick="Logar">
+            Entrar
+        </button>
+
+        <!-- CRIAR CONTA -->
+        <button class="btn btn-outline-primary w-100"
+                @onclick="AbrirModal">
+            Criar conta
+        </button>
+
+        @if (!string.IsNullOrEmpty(_mensagem))
+        {
+            <div class="alert alert-warning mt-3 text-center">
+                @_mensagem
+            </div>
+        }
+
+    </div>
+
+</div>
+
+<!-- 🔥 MODAL -->
+@if (_mostrarModal)
+{
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content shadow">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Criar Conta</h5>
+                    <button class="btn-close" @onclick="FecharModal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <input class="form-control mb-2"
+                           placeholder="Usuário"
+                           @bind="_novoUsuario.Username" />
+
+                    <input type="password"
+                           class="form-control"
+                           placeholder="Senha"
+                           @bind="_novoUsuario.Senha" />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary"
+                            @onclick="FecharModal">
+                        Cancelar
+                    </button>
+
+                    <button class="btn btn-success"
+                            @onclick="Cadastrar">
+                        Criar
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+
+    Usuario _usuario = new Usuario();
+    Usuario _novoUsuario = new Usuario();
+
+    string _mensagem = "";
+    bool _mostrarModal = false;
+
+    private async Task Logar()
+    {
+        var user = await _userRepo.Login(_usuario.Username, _usuario.Senha);
+        if (user != null)
+        {
+            _mensagem = "Login efetuado com sucesso ✔️";
+            await _auth.Login(user);
+            _nav.NavigateTo("/");
+        }
+        else
+        {
+            _mensagem = "Usuário ou senha inválidos!";
+        }
+    }
+
+    private void AbrirModal()
+    {
+        _mostrarModal = true;
+    }
+
+    private void FecharModal()
+    {
+        _mostrarModal = false;
+        _novoUsuario = new Usuario();
+    }
+
+    private async Task Cadastrar()
+    {
+        if (string.IsNullOrWhiteSpace(_novoUsuario.Username) ||
+            string.IsNullOrWhiteSpace(_novoUsuario.Senha))
+        {
+            _mensagem = "Preencha os campos!";
+            return;
+        }
+
+        _novoUsuario.TipoUsuario = "Cliente";
+
+        await _userRepo.Salvar(_novoUsuario);
+
+        _mensagem = "Usuário criado com sucesso!";
+        FecharModal();
+    }
+}

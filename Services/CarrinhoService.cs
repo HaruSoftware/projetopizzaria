@@ -60,5 +60,11 @@ namespace crudcomdb.Services
         }
 
         private void Notificar() => OnChange?.Invoke();
+
+        public void Limpar()
+        {
+            Itens.Clear();
+            Notificar();
+        }
     }
 }

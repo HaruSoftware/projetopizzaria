@@ -6,7 +6,7 @@
 
         public int IdCliente { get; set; }
 
-        public DateTime Data { get; set; } = DateTime.Now;
+        public DateTime Data { get; set; } = DateTime.UtcNow;
 
         public decimal Total { get; set; }
 

@@ -52,7 +52,14 @@ else
         </tbody>
     </table>
 
-    <h5>Total: R$ @_carrinho.Total()</h5>
+    <div class="d-flex justify-content-between align-items-center">
+        <h5>Total: R$ @_carrinho.Total()</h5>
+
+        <button class="btn btn-danger"
+                @onclick="LimparCarrinho">
+            Limpar Carrinho
+        </button>
+    </div>
 }
 
 @code {
@@ -69,4 +76,14 @@ else
     void Aumentar(int id) => _carrinho.Aumentar(id);
     void Diminuir(int id) => _carrinho.Diminuir(id);
     void Remover(int id) => _carrinho.Remover(id);
+
+    void LimparCarrinho()
+    {
+        _carrinho.Limpar();
+    }
+
+    public void Dispose()
+    {
+        _carrinho.OnChange -= Atualizar;
+    }
 }

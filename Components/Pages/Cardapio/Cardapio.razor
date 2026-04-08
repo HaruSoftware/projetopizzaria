@@ -4,41 +4,154 @@
 @using crudcomdb.Services
 @inject IProdutoRepository _repo
 @inject CarrinhoService _carrinho
+@inject IPedidoRepository _pedidoRepo
 @rendermode InteractiveServer
 
 <h3>Cardápio 🍕</h3>
 
-<div class="row">
-    @foreach (var produto in produtos)
-    {
-        <div class="col-md-3 mb-4">
-            <div class="card p-2 shadow">
-                <h5>@produto.Nome</h5>
-                <strong>R$ @produto.Preco</strong>
+@if (pedidoRealizado)
+{
+    <div class="alert alert-success">
+        Pedido realizado com sucesso! 🍕
+    </div>
+}
 
-                <button class="btn btn-primary mt-2"
-                        @onclick="() => Adicionar(produto)">
-                    Adicionar
-                </button>
+@if (produtos == null || !produtos.Any())
+{
+    <p>Carregando produtos...</p>
+}
+else
+{
+    <div class="row">
+        @foreach (var produto in produtos)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card p-3 shadow h-100">
+                    <h5>@produto.Nome</h5>
+
+                    <strong class="mt-2">R$ @produto.Preco</strong>
+
+                    <button class="btn btn-primary mt-3"
+                            @onclick="() => Adicionar(produto)">
+                        Adicionar
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- BOTÃO FINALIZAR -->
+<button class="btn btn-success mt-3"
+        @onclick="AbrirModal"
+        disabled="@(!_carrinho.Itens.Any())">
+    Finalizar Pedido
+</button>
+
+<!-- CARRINHO -->
+<Carrinho />
+
+<!-- MODAL -->
+@if (mostrarModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmar Pedido 🍕</h5>
+                    <button class="btn-close" @onclick="FecharModal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p><strong>Total:</strong> R$ @_carrinho.Total()</p>
+
+                    <ul class="list-group">
+                        @foreach (var item in _carrinho.Itens)
+                        {
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>@item.Produto.Nome</span>
+                                <span>@item.Quantidade x R$ @item.Produto.Preco</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="FecharModal">
+                        Cancelar
+                    </button>
+
+                    <button class="btn btn-success" @onclick="FinalizarPedido">
+                        Confirmar
+                    </button>
+                </div>
+
             </div>
         </div>
-    }
-</div>
-
-<Carrinho />
+    </div>
+}
 
 @code {
     List<Produto> produtos = new();
+    bool mostrarModal = false;
+    bool pedidoRealizado = false;
 
     protected override async Task OnInitializedAsync()
     {
         produtos = await _repo.Listar();
-
-        Console.WriteLine($"Produtos encontrados: {produtos.Count}");
     }
 
     void Adicionar(Produto p)
     {
+        pedidoRealizado = false;
         _carrinho.Adicionar(p);
+    }
+
+    void AbrirModal()
+    {
+        if (!_carrinho.Itens.Any())
+            return;
+
+        mostrarModal = true;
+    }
+
+    void FecharModal()
+    {
+        mostrarModal = false;
+    }
+
+    async Task FinalizarPedido()
+    {
+        try
+        {
+            var pedido = new Pedido
+            {
+                IdCliente = 1,
+                Data = DateTime.UtcNow,
+                Total = _carrinho.Total(),
+                Status = StatusPedido.Pendente,
+                Pago = false,
+
+                Itens = _carrinho.Itens.Select(x => new PedidoItem
+                {
+                    ProdutoId = x.Produto.Id,
+                    Quantidade = x.Quantidade,
+                    PrecoUnitario = x.Produto.Preco
+                }).ToList()
+            };
+
+            await _pedidoRepo.Criar(pedido);
+
+            _carrinho.Limpar();
+
+            pedidoRealizado = true;
+
+            FecharModal();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("ERRO: " + ex.Message);
+        }
     }
 }

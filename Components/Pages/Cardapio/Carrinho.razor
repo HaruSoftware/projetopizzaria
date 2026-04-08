@@ -1,0 +1,72 @@
+﻿@using crudcomdb.Services
+@inject CarrinhoService _carrinho
+@rendermode InteractiveServer
+
+<h4 class="mt-4">Carrinho 🛒</h4>
+
+@if (!_carrinho.Itens.Any())
+{
+    <p>Seu carrinho está vazio.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th>Preço</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _carrinho.Itens)
+            {
+                <tr>
+                    <td>@item.Produto.Nome</td>
+
+                    <td>
+                        <button class="btn btn-sm btn-danger"
+                                @onclick="() => Diminuir(item.Produto.Id)">
+                            -
+                        </button>
+
+                        @item.Quantidade
+
+                        <button class="btn btn-sm btn-success"
+                                @onclick="() => Aumentar(item.Produto.Id)">
+                            +
+                        </button>
+                    </td>
+
+                    <td>R$ @(item.Produto.Preco* item.Quantidade)</td>
+
+                    <td>
+                        <button class="btn btn-sm btn-warning"
+                                @onclick="() => Remover(item.Produto.Id)">
+                            Remover
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h5>Total: R$ @_carrinho.Total()</h5>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        _carrinho.OnChange += Atualizar;
+    }
+
+    void Atualizar()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    void Aumentar(int id) => _carrinho.Aumentar(id);
+    void Diminuir(int id) => _carrinho.Diminuir(id);
+    void Remover(int id) => _carrinho.Remover(id);
+}

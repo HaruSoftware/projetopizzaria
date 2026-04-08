@@ -1,6 +1,8 @@
-﻿@using crudcomdb.Models
+﻿    @using crudcomdb.Models
 @using crudcomdb.Services
 @inject AuthService _auth
+@inject NavigationManager _nav
+@rendermode InteractiveServer
 
 @if (_auth.EstaLogado() == true)
 {
@@ -27,15 +29,15 @@
             <!-- 👤 INFO DO USUÁRIO -->
             <div class="nav-item px-3">
                 <span class="nav-link">
-                    <strong>@_auth.UsuarioLogado.Username</strong>
+                    <strong>Meu Perfil</strong>
                 </span>
             </div>
 
             <!-- 👤 CLIENTE -->
-            @if (_auth.UsuarioLogado.TipoUsuario == "Cliente")
+            @if (_auth.UsuarioLogado?.TipoUsuario == "Cliente")
             {
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="cardapio">
+                    <NavLink class="nav-link" href="Cardapio">
                         Cardápio
                     </NavLink>
                 </div>
@@ -48,7 +50,7 @@
             }
 
             <!-- 👑 ADMIN -->
-            @if (_auth.UsuarioLogado.TipoUsuario == "Admin")
+            @if (_auth.UsuarioLogado?.TipoUsuario == "Admin")
             {
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="admin-pedidos">
@@ -77,12 +79,20 @@
 }
 
 @code {
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await _auth.Inicializar();
+        StateHasChanged();
+    }
+
     private void OnAuthStateChanged()
     {
         InvokeAsync(StateHasChanged);
     }
-    void Logout()
+    async void Logout()
     {
-        _auth.Logout();
+        await _auth.Logout();
+        _nav.NavigateTo("/login", true);
     }
 }

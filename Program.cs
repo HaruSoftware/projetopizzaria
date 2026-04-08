@@ -18,7 +18,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
+
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<CarrinhoService>();
 
 var app = builder.Build();
 

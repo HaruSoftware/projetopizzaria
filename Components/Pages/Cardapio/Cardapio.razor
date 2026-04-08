@@ -1,0 +1,42 @@
+﻿@page "/cardapio"
+@using crudcomdb.Models
+@using crudcomdb.Interfaces
+@using crudcomdb.Services
+@inject IProdutoRepository _repo
+@inject CarrinhoService _carrinho
+@rendermode InteractiveServer
+
+<h3>Cardápio 🍕</h3>
+
+<div class="row">
+    @foreach (var produto in produtos)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="card p-2 shadow">
+                <h5>@produto.Nome</h5>
+                <strong>R$ @produto.Preco</strong>
+
+                <button class="btn btn-primary mt-2"
+                        @onclick="() => Adicionar(produto)">
+                    Adicionar
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+<Carrinho />
+
+@code {
+    List<Produto> produtos = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        produtos = await _repo.Listar();
+    }
+
+    void Adicionar(Produto p)
+    {
+        _carrinho.Adicionar(p);
+    }
+}

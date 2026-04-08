@@ -13,6 +13,7 @@
 @if(_auth.UsuarioLogado != null)
 {
     <p>Usuário já logado</p>
+    <button @onclick="VoltarMenu">Voltar Para o inicio</button>
 }else{
     <div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
 
@@ -157,5 +158,9 @@
 
         _mensagem = "Usuário criado com sucesso!";
         FecharModal();
+    }
+    private void VoltarMenu()
+    {
+        _nav.NavigateTo("/");
     }
 }

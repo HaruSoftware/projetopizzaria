@@ -33,6 +33,8 @@
     protected override async Task OnInitializedAsync()
     {
         produtos = await _repo.Listar();
+
+        Console.WriteLine($"Produtos encontrados: {produtos.Count}");
     }
 
     void Adicionar(Produto p)

@@ -21,6 +21,64 @@ namespace crudcomdb.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("crudcomdb.Models.Produto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Preco")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Produtos");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nome = "Pizza Calabresa",
+                            Preco = 39.90m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nome = "Pizza Marguerita",
+                            Preco = 42.50m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nome = "Pizza Frango com Catupiry",
+                            Preco = 45.00m
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nome = "Refrigerante 2L",
+                            Preco = 12.00m
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nome = "Pizza Portuguesa",
+                            Preco = 47.90m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Nome = "Refrigerante",
+                            Preco = 9.90m
+                        });
+                });
+
             modelBuilder.Entity("crudcomdb.Models.Usuario", b =>
                 {
                     b.Property<int>("Id")

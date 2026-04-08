@@ -2,17 +2,19 @@
 @using crudcomdb.Services
 @inject AuthService _auth
 @inject NavigationManager _nav
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
-<h3>Bem-vindo à Pizzaria 🍕 @CurrentValor</h3>
-<p>Você está logado como: <strong>@_auth.UsuarioLogado?.Username</strong></p>
+@if(_auth.EstaLogado() == false)
+{
+    <h3>Redirecionando para o login...</h3>
+}else{
+    <h3>Bem-vindo à Pizzaria 🍕</h3>
+    <p>Você está logado como: <strong>@_auth.UsuarioLogado?.Username</strong></p>
+}
 
 @code {
-
-    [Parameter]
-    public string CurrentValor { get; set; } = "Teste";
-
     private bool _carregando = true;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -20,5 +22,10 @@
         await _auth.Inicializar(); // garante recuperar da sessão
         _carregando = false;
         StateHasChanged(); // força atualizar a UI
+
+        if (_auth.EstaLogado() == false)
+        {
+            _nav.NavigateTo("/login");
+        }
     }
 }

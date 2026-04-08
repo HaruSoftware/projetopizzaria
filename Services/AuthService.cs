@@ -9,7 +9,6 @@ namespace crudcomdb.Services
         private readonly ProtectedSessionStorage _sessionStorage;
 
         public Usuario? UsuarioLogado { get; private set; }
-        public string ValorAtual { get; private set; }
 
         public event Action? OnLogin;
 
@@ -21,7 +20,6 @@ namespace crudcomdb.Services
         public async Task Login(Usuario usuario)
         {
             UsuarioLogado = usuario;
-            ValorAtual = "Xablauzin";
 
             await _sessionStorage.SetAsync("UsuarioLogado", JsonSerializer.Serialize(usuario));
             OnLogin?.Invoke();
@@ -30,7 +28,6 @@ namespace crudcomdb.Services
         public async Task Logout()
         {
             UsuarioLogado = null;
-            ValorAtual = string.Empty;
             await _sessionStorage.DeleteAsync("UsuarioLogado");
             OnLogin?.Invoke();
         }
@@ -41,7 +38,6 @@ namespace crudcomdb.Services
             if (result.Success && !string.IsNullOrEmpty(result.Value))
             {
                 UsuarioLogado = JsonSerializer.Deserialize<Usuario>(result.Value);
-                ValorAtual = "Xablauzin";
                 OnLogin?.Invoke();
             }
         }

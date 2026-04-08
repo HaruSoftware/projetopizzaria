@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@using crudcomdb.Services
+@inject AuthService _auth
+@inject NavigationManager _nav
 
 <div class="page d-flex" style="height: 100vh; overflow: hidden;">
 
@@ -7,10 +10,6 @@
     </div>
 
     <main class="flex-fill d-flex flex-column">
-
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
 
         <article class="content px-4 flex-fill overflow-auto">
             @Body

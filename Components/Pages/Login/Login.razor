@@ -10,46 +10,51 @@
 @inject AuthService _auth
 @inject NavigationManager _nav
 
-<div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
+@if(_auth.UsuarioLogado != null)
+{
+    <p>Usuário já logado</p>
+}else{
+    <div class="d-flex justify-content-center align-items-center" style="height: 80vh;">
 
-    <div class="card shadow p-4" style="width: 350px;">
+        <div class="card shadow p-4" style="width: 350px;">
 
-        <h4 class="text-center mb-3">🍕 Pizzaria</h4>
-        <h6 class="text-center text-muted mb-4">Acesse sua conta</h6>
+            <h4 class="text-center mb-3">🍕 Pizzaria</h4>
+            <h6 class="text-center text-muted mb-4">Acesse sua conta</h6>
 
-        <!-- USER -->
-        <input class="form-control mb-3"
-               placeholder="Usuário"
-               @bind="_usuario.Username" />
+            <!-- USER -->
+            <input class="form-control mb-3"
+                   placeholder="Usuário"
+                   @bind="_usuario.Username" />
 
-        <!-- SENHA -->
-        <input type="password"
-               class="form-control mb-3"
-               placeholder="Senha"
-               @bind="_usuario.Senha" />
+            <!-- SENHA -->
+            <input type="password"
+                   class="form-control mb-3"
+                   placeholder="Senha"
+                   @bind="_usuario.Senha" />
 
-        <!-- BOTÃO LOGIN -->
-        <button class="btn btn-success w-100 mb-2"
-                @onclick="Logar">
-            Entrar
-        </button>
+            <!-- BOTÃO LOGIN -->
+            <button class="btn btn-success w-100 mb-2"
+                    @onclick="Logar">
+                Entrar
+            </button>
 
-        <!-- CRIAR CONTA -->
-        <button class="btn btn-outline-primary w-100"
-                @onclick="AbrirModal">
-            Criar conta
-        </button>
+            <!-- CRIAR CONTA -->
+            <button class="btn btn-outline-primary w-100"
+                    @onclick="AbrirModal">
+                Criar conta
+            </button>
 
-        @if (!string.IsNullOrEmpty(_mensagem))
-        {
-            <div class="alert alert-warning mt-3 text-center">
-                @_mensagem
-            </div>
-        }
+            @if (!string.IsNullOrEmpty(_mensagem))
+            {
+                <div class="alert alert-warning mt-3 text-center">
+                    @_mensagem
+                </div>
+            }
+
+        </div>
 
     </div>
-
-</div>
+}
 
 <!-- 🔥 MODAL -->
 @if (_mostrarModal)
@@ -103,6 +108,12 @@
     string _mensagem = "";
     bool _mostrarModal = false;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await _auth.Inicializar(); // garante recuperar da sessão
+        StateHasChanged(); // força atualizar a UI
+    }
+
     private async Task Logar()
     {
         var user = await _userRepo.Login(_usuario.Username, _usuario.Senha);
@@ -112,7 +123,7 @@
             await _auth.Login(user);
 
             // Redireciona para a página perfil
-            _nav.NavigateTo("/perfil",true);
+            _nav.NavigateTo("/",true);
         }
         else
         {
